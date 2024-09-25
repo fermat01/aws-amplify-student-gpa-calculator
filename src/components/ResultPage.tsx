@@ -16,7 +16,7 @@ const ResultPage: React.FC = () => {
   useEffect(() => {
     const fetchStudentResult = async () => {
       try {
-        const response = await axios.get<StudentResult>(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/${studentId}`);
+        const response = await axios.get<StudentResult>(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/result/${studentId}`);
         
         // Check if response data matches expected structure
         if (response.data && response.data.fullName && typeof response.data.gpa === 'number') {
