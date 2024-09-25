@@ -59,10 +59,7 @@ case "A+":
     }
   };
 
-  // If no result found
-  if (!fullName || gpa === undefined) {
-    return <div>No result found for this student.</div>;
-  }
+
 
   // Render the result page
   return (
