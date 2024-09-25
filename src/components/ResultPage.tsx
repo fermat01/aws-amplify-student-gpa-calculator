@@ -9,7 +9,7 @@ interface LocationState {
 const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
-  const { fullName, gpa } = (location.state as LocationState) || { fullName: "", gpa: 0 };
+  const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
 
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
@@ -29,8 +29,7 @@ const ResultPage: React.FC = () => {
   const getCongratulationMessage = (gpa: number): string => {
     const letterGrade = getLetterGrade(gpa);
     switch (letterGrade) {
-      
-case "A+":
+      case "A+":
         return "Excellent! Your performance is outstanding. Keep up the fantastic work!";
       case "A":
         return "Great job! You've demonstrated excellent understanding and skills.";
@@ -59,9 +58,10 @@ case "A+":
     }
   };
 
-  if (!fullName || gpa === undefined) {
-      return <div>No result found for this student.</div>;
-    }
+  // Check if fullName is empty or gpa is not a valid number
+  if (!fullName || isNaN(gpa)) {
+    return <div>No result found for this student.</div>;
+  }
 
   // Render the result page
   return (
