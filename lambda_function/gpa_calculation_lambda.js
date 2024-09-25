@@ -3,13 +3,14 @@ import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
-const tableName = "gpa_dynamodb_table";
+const tableName = "gpa-dynamodb-table";
 
 export const handler = async (event) => {
   try {
     // Extract form data from event
     const {
       studentId,
+      bornDate,
       firstName,
       lastName,
       assignment1,
@@ -43,7 +44,8 @@ export const handler = async (event) => {
     // Prepare item for DynamoDB
     const item = {
       studentId,
-      fullName : firstName + lastName,
+      bornDate: bornDate,
+      fullName: firstName + lastName,
       assignment1: parseFloat(assignment1),
       assignment2: parseFloat(assignment2),
       assignment3: parseFloat(assignment3),
