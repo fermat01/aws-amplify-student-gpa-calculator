@@ -1,15 +1,39 @@
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios"; // Ensure Axios is imported
 
-interface LocationState {
+interface StudentResult {
   fullName: string;
   gpa: number;
 }
 
 const ResultPage: React.FC = () => {
-  // Use useLocation to get the current location
-  const location = useLocation();
-  const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
+  const [studentResult, setStudentResult] = useState<StudentResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { studentId } = useParams<{ studentId: string }>();
+
+  useEffect(() => {
+    const fetchStudentResult = async () => {
+      try {
+        const response = await axios.get<StudentResult>(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/${studentId}`);
+        
+        // Check if response data matches expected structure
+        if (response.data && response.data.fullName && typeof response.data.gpa === 'number') {
+          setStudentResult(response.data);
+        } else {
+          throw new Error("Invalid data format");
+        }
+      } catch (err) {
+        console.error("Error fetching student result:", err);
+        setError("Failed to fetch student result. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentResult();
+  }, [studentId]);
 
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
@@ -58,10 +82,23 @@ const ResultPage: React.FC = () => {
     }
   };
 
-  // Check if fullName is empty or gpa is not a valid number
-  if (!fullName || isNaN(gpa)) {
-    return <div>No result found for this student.</div>;
+  // Loading state
+  if (loading) {
+    return <div className="text-center">Loading student results...</div>;
   }
+
+  // Error handling
+  if (error) {
+    return <div className="text-red-600 text-center">{error}</div>;
+  }
+
+  // If no result found
+  if (!studentResult) {
+    return <div className="text-center">No result found for this student.</div>;
+  }
+
+  // Destructure fullName and gpa from studentResult
+  const { fullName, gpa } = studentResult;
 
   // Render the result page
   return (
