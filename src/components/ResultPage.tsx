@@ -1,39 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import axios from "axios"; // Ensure Axios is imported
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
 
-interface StudentResult {
+interface LocationState {
   fullName: string;
   gpa: number;
 }
 
 const ResultPage: React.FC = () => {
-  const [studentResult, setStudentResult] = useState<StudentResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { studentId } = useParams<{ studentId: string }>();
-
-  useEffect(() => {
-    const fetchStudentResult = async () => {
-      try {
-        const response = await axios.get<StudentResult>(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/result/${studentId}`);
-        
-        // Check if response data matches expected structure
-        if (response.data && response.data.fullName && typeof response.data.gpa === 'number') {
-          setStudentResult(response.data);
-        } else {
-          throw new Error("Invalid data format");
-        }
-      } catch (err) {
-        console.error("Error fetching student result:", err);
-        setError("Failed to fetch student result. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudentResult();
-  }, [studentId]);
+  // Use useLocation to get the current location
+  const location = useLocation();
+  const { fullName, gpa } = (location.state as LocationState) || { fullName: "", gpa: 0 };
 
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
@@ -53,7 +29,8 @@ const ResultPage: React.FC = () => {
   const getCongratulationMessage = (gpa: number): string => {
     const letterGrade = getLetterGrade(gpa);
     switch (letterGrade) {
-      case "A+":
+      
+case "A+":
         return "Excellent! Your performance is outstanding. Keep up the fantastic work!";
       case "A":
         return "Great job! You've demonstrated excellent understanding and skills.";
@@ -82,23 +59,9 @@ const ResultPage: React.FC = () => {
     }
   };
 
-  // Loading state
-  if (loading) {
-    return <div className="text-center">Loading student results...</div>;
+ if (!fullName || gpa === undefined) {
+    return <div>No result found for this student.</div>;
   }
-
-  // Error handling
-  if (error) {
-    return <div className="text-red-600 text-center">{error}</div>;
-  }
-
-  // If no result found
-  if (!studentResult) {
-    return <div className="text-center">No result found for this student.</div>;
-  }
-
-  // Destructure fullName and gpa from studentResult
-  const { fullName, gpa } = studentResult;
 
   // Render the result page
   return (
