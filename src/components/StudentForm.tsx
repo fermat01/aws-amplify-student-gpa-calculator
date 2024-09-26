@@ -11,7 +11,6 @@ const fieldLabels: { [key: string]: string } = {
   midterm2: "Second Midterm",
   final: "Final Exam",
 };
-
 type FormData = {
   studentId: string;
   firstName: string;
@@ -38,8 +37,9 @@ const StudentForm: React.FC = () => {
     midterm2: "",
     final: "",
   });
+  
 
-  const [showAlerts, setShowAlerts] = useState(false);
+  const [ showAlerts, setShowAlerts ] = useState(false);
   const navigate = useNavigate(); // Initialize navigate
 
   const handleInputChange = (
@@ -60,22 +60,30 @@ const StudentForm: React.FC = () => {
       // Send data to your API Gateway using Axios
       const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
       
-      console.log("Response of POST method:", response.data); // Debug purpose
+      console.log("response of POST method", response.data); // Debug purpose
 
-      // Step to parse the body and extract GPA
       const responseBody = JSON.parse(response.data.body);
-      console.log('Parsed Body:', responseBody); // Log parsed body for debugging
-
-      // Extract the GPA value
-      const gpa = responseBody.gpa;
+           console.log('Parsed Body:', responseBody); // Log parsed body for debugging
+               // Extract the GPA value
+           const gpa = responseBody.gpa;
 
       // Log the extracted GPA value
       console.log('Extracted GPA:', gpa); // Should output the GPA value
-
       if (response.status === 200) {
+        // Assuming your Lambda function returns the calculated GPA in response.data.gpa
+      // Extract the GPA value
+      const responseBody = JSON.parse(response.data.body);
+
+       
+        const gpa = responseBody.gpa;
+       
+
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
-          state: { fullName: `${formData.firstName} ${formData.lastName}`, gpa },
+          state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa, },
+     
+     
+          
         });
       }
     } catch (error) {
@@ -84,6 +92,7 @@ const StudentForm: React.FC = () => {
       setShowAlerts(true);
     }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -109,11 +118,10 @@ const StudentForm: React.FC = () => {
                 onChange={handleInputChange}
               />
               {showAlerts && !formData.studentId && (
-                <span className="text-left block text-red-500 text-xs mt-1">Student ID is required</span>
+                <span className="text-left block text-red-500 text-xs mt-1">Student id is required</span>
               )}
             </div>
-
-            <div className="mb-4">
+               <div className="mb-4">
               <label htmlFor="bornDate" className="text-left block text-sm font-medium text-gray-700 mb-1">
                 Year of Birth
               </label>
@@ -124,13 +132,13 @@ const StudentForm: React.FC = () => {
                 name="bornDate"
                 placeholder="YYYY"
                 value={formData.bornDate}
-                onChange={handleInputChange}
+                onChange={ handleInputChange }
                 min="1900" 
                 max="2100" 
                 step="1" 
               />
-              {showAlerts && !formData.bornDate && (
-                <span className="text-left block text-red-500 text-xs mt-1">Year of birth is required</span>
+               {showAlerts && !formData.studentId && (
+                <span className="text-left block text-red-500 text-xs mt-1"> Year of birth is required</span>
               )}
             </div>
 
@@ -168,43 +176,45 @@ const StudentForm: React.FC = () => {
               )}
             </div>
 
-            {/* Repeat similar input fields for assignments and exams */}
-            {Object.keys(fieldLabels).map((field, index) => (
-              <div key={index} className="mb-4">
-                <label htmlFor={field} className="text-left block text-sm font-medium text-gray-700 mb-1">
-                  {fieldLabels[field]} {/* Use the mapping for labels */}
-                </label>
-                <input
-                  type="number"
-                  id={field}
-                  className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Score (0 - 100)"
-                  name={field}
-                  value={formData[field as keyof FormData]}
-                  onChange={handleInputChange}
-                  min={0} // Example validation for numeric inputs
-                  max={100} // Example validation for numeric inputs
-                />
-               {showAlerts && !formData[field as keyof FormData] && (
-                  <span className="text-left block text-red-500 text-xs mt-1">{`${fieldLabels[field]} score is required`}</span>
-               )}
-             </div>
-           ))}
+         
 
-           {/* Submit Button */}
-           <div className='col-span-full flex justify-center mt-1'>
-             <button
-               type="submit"
-               className="w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-             >
-               Submit Student Information
-             </button>
-           </div>
-         </form>
-       </div>
-     </div>
-   </div>
- );
+            {/* Repeat similar input fields for assignments and exams */}
+         {Object.keys(fieldLabels).map((field, index) => (
+      <div key={index} className="mb-4">
+        <label htmlFor={field} className="text-left block text-sm font-medium text-gray-700 mb-1">
+          {fieldLabels[field]} {/* Use the mapping for labels */}
+        </label>
+        <input
+          type="number"
+          id={field}
+          className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Score (0-100)"
+          name={field}
+          value={formData[field as keyof FormData]}
+          onChange={handleInputChange}
+          min={0} // Example validation for numeric inputs
+          max={100} // Example validation for numeric inputs
+             />
+         {showAlerts && !formData.lastName && (
+            <span className="text-left block text-red-500 text-xs mt-1">{`${fieldLabels[field]} score`} is required</span>
+          )}
+      </div>
+        ) )}
+
+            {/* Submit Button */}
+            <div className='col-span-full flex justify-center mt-1'>
+              <button
+                type="submit"
+                className="w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Submit Student Information
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default StudentForm;
