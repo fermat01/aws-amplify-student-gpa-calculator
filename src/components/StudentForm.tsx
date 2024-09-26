@@ -61,12 +61,12 @@ const StudentForm: React.FC = () => {
       const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
       
       console.log("response of POST method", response.data); // Debug purpose
-      console.log("response of POST method :extract gpa value", response.data.gpa); // Debug purpose
+      console.log("response of POST method :extract gpa value", JSON.parse(response.data.body.gpa)); // Debug purpose
       if (response.status === 200) {
         // Assuming your Lambda function returns the calculated GPA in response.data.gpa
       // Extract the GPA value
-      const gpa =  response.data.gpa
-   
+      const responseBody = JSON.parse(response.data.body);
+        const gpa = responseBody.gpa;
        
 
         // Navigate to ResultPage with calculated GPA and full name
