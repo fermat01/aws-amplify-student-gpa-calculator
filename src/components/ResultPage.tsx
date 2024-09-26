@@ -10,8 +10,7 @@ const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
     console.log(location)  // help debug the code 
-  const { fullName, gpa } = (location.state as LocationState) || { fullName: "", gpa: 0 };
-
+   const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
     if (gpa >= 3.7) return "A";
