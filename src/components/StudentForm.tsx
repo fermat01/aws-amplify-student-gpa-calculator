@@ -64,12 +64,13 @@ const StudentForm: React.FC = () => {
         // Assuming your Lambda function returns the calculated GPA in response.data.gpa
       // Extract the GPA value
       const gpa =  response.data.gpa
-        
+      console.log(response.data);
        
 
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
-          state: { fullName: `${formData.firstName} ${formData.lastName}`, gpa },
+          state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa },
+     
      
           
         });
