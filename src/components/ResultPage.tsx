@@ -1,35 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import axios from "axios";
 
 interface LocationState {
-  studentId: string; // Assuming studentId is passed via location state
+  fullName: string;
+  gpa: number;
 }
 
 const ResultPage: React.FC = () => {
-  const location = useLocation(); // No type argument here
-  const [fullName, setFullName] = useState<string>("");
-  const [gpa, setGpa] = useState<number>(0);
+  // Use useLocation to get the current location
+  const location = useLocation();
   
-  // Function to fetch student data
-  const getStudentData = async (studentId: string) => {
-    try {
-      const response = await axios.get(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/gpa?studentId/${studentId}`);
-      const { fullname, gpa } = response.data; // Assuming the API returns these fields
-      setFullName(fullname);
-      setGpa(gpa);
-    } catch (error) {
-      console.error('Error fetching student data:', error);
-    }
-  };
-
-  useEffect(() => {
-    const studentId = (location.state as LocationState)?.studentId; // Type assertion for state
-    if (studentId) {
-      getStudentData(studentId);
-    }
-  }, [location.state]);
-
+    console.log(location)  // help debug the code 
+   const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
     if (gpa >= 3.7) return "A";
@@ -48,7 +30,8 @@ const ResultPage: React.FC = () => {
   const getCongratulationMessage = (gpa: number): string => {
     const letterGrade = getLetterGrade(gpa);
     switch (letterGrade) {
-      case "A+":
+      
+case "A+":
         return "Excellent! Your performance is outstanding. Keep up the fantastic work!";
       case "A":
         return "Great job! You've demonstrated excellent understanding and skills.";
@@ -78,7 +61,7 @@ const ResultPage: React.FC = () => {
   };
 
   if (!fullName || gpa === undefined) {
-    console.log(fullName, gpa); // help debug the code 
+    console.log(fullName,gpa); // help debug the code 
     return <div>No result found for this student.</div>;
   }
 
