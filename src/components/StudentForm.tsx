@@ -59,17 +59,17 @@ const StudentForm: React.FC = () => {
     try {
       // Send data to your API Gateway using Axios
       const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
-
+      console.log("response of POST method",response.data);
       if (response.status === 200) {
         // Assuming your Lambda function returns the calculated GPA in response.data.gpa
       // Extract the GPA value
       const gpa =  response.data.gpa
-      console.log(response.data);
+   
        
 
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
-          state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa },
+          state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa, },
      
      
           
