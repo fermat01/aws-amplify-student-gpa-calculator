@@ -59,7 +59,8 @@ case "A+":
     }
   };
 
- if (!fullName || gpa === undefined) {
+  if (!fullName || gpa === undefined) {
+    console.log(fullName,gpa);
     return <div>No result found for this student.</div>;
   }
 
