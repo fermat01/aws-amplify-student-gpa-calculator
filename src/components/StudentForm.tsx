@@ -70,14 +70,6 @@ const StudentForm: React.FC = () => {
       // Log the extracted GPA value
       console.log('Extracted GPA:', gpa); // Should output the GPA value
       if (response.status === 200) {
-        // Assuming your Lambda function returns the calculated GPA in response.data.gpa
-      // Extract the GPA value
-      const responseBody = JSON.parse(response.data.body);
-
-       
-        const gpa = responseBody.gpa;
-       
-
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
           state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa, },
