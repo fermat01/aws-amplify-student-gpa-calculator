@@ -1,17 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 
 interface LocationState {
   fullName: string;
-  gpa: number;
 }
 
 const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
   
-    console.log(location)  // help debug the code 
-   const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
+  console.log(location); // help debug the code 
+  const { fullName = "" } = (location.state as LocationState) || {};
+  
+  const [gpa, setGpa] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch GPA from Lambda URL
+  useEffect(() => {
+    const fetchGPA = async () => {
+      try {
+        const response = await fetch("https://iobx4s7n6mwlrrgmrodykvzcfm0aagid.lambda-url.us-east-1.on.aws/"); // Replace with your Lambda URL
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setGpa(data.gpa); // Assuming the response contains a 'gpa' field
+      } catch (err) {
+          // Log the error to the console for debugging
+        console.error("Error fetching student result:", err);
+        setError("Failed to fetch GPA. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGPA();
+  }, []);
+
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
     if (gpa >= 3.7) return "A";
@@ -30,8 +56,7 @@ const ResultPage: React.FC = () => {
   const getCongratulationMessage = (gpa: number): string => {
     const letterGrade = getLetterGrade(gpa);
     switch (letterGrade) {
-      
-case "A+":
+      case "A+":
         return "Excellent! Your performance is outstanding. Keep up the fantastic work!";
       case "A":
         return "Great job! You've demonstrated excellent understanding and skills.";
@@ -60,8 +85,18 @@ case "A+":
     }
   };
 
-  if (!fullName || gpa === undefined) {
-    console.log(fullName,gpa); // help debug the code 
+  // Handle loading and error states
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    console.error(error); // help debug the code 
+    return <div>{error}</div>;
+  }
+
+  if (!fullName || gpa === null) {
+    console.log(fullName, gpa); // help debug the code 
     return <div>No result found for this student.</div>;
   }
 
