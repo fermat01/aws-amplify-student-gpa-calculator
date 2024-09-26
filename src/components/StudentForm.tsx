@@ -62,10 +62,8 @@ const StudentForm: React.FC = () => {
 
       if (response.status === 200) {
         // Assuming your Lambda function returns the calculated GPA in response.data.gpa
-        // Parse the body of the JSON response
-        const parsedBody = JSON.parse(response.data);
-        // Extract the GPA value
-        const gpa = parsedBody.gpa;
+      // Extract the GPA value
+      const gpa =  response.data.gpa
         
        
 
