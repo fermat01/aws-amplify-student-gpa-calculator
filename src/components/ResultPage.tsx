@@ -9,8 +9,7 @@ interface LocationState {
 const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
-  
-    console.log(location)  // help debug the code 
+
    const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
@@ -61,7 +60,7 @@ case "A+":
   };
 
   if (!fullName || gpa === undefined) {
-    console.log(fullName,gpa); // help debug the code 
+   // console.log(fullName, gpa); // help debug the code 
     return <div>No result found for this student.</div>;
   }
 
