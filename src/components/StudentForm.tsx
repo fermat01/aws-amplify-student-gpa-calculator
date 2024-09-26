@@ -11,7 +11,6 @@ const fieldLabels: { [key: string]: string } = {
   midterm2: "Second Midterm",
   final: "Final Exam",
 };
-
 type FormData = {
   studentId: string;
   firstName: string;
@@ -38,8 +37,9 @@ const StudentForm: React.FC = () => {
     midterm2: "",
     final: "",
   });
+  
 
-  const [showAlerts, setShowAlerts] = useState(false);
+  const [ showAlerts, setShowAlerts ] = useState(false);
   const navigate = useNavigate(); // Initialize navigate
 
   const handleInputChange = (
@@ -57,32 +57,28 @@ const StudentForm: React.FC = () => {
     setShowAlerts(true);
 
     try {
-      // Send data to your API Gateway using Axios to store GPA
-      await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
-
-      // Now retrieve the stored GPA
-      const response = await axios.get(`https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev/gpa?studentId=${formData.studentId}`);
+      // Send data to your API Gateway using Axios
+      const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
 
       if (response.status === 200) {
+        // Assuming your Lambda function returns the calculated GPA in response.data.gpa
         const gpa = response.data.gpa;
+       
 
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
-          state: { 
-            fullName: `${formData.firstName} ${formData.lastName}`, 
-            gpa 
-          },
+          state: { fullName: `${formData.firstName} ${formData.lastName}`, gpa },
+     
+          
         });
-      } else {
-        console.error(`Unexpected response status when retrieving GPA: ${response.status}`);
-        // Handle unexpected status codes here, e.g., show an alert
       }
     } catch (error) {
-      console.error(`Error submitting form or retrieving GPA: ${error}`);
+      console.error(`Error submitting form: ${error}`);
       // Optionally handle error state here
       setShowAlerts(true);
     }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -108,26 +104,27 @@ const StudentForm: React.FC = () => {
                 onChange={handleInputChange}
               />
               {showAlerts && !formData.studentId && (
-                <span className="text-left block text-red-500 text-xs mt-1">Student ID is required</span>
+                <span className="text-left block text-red-500 text-xs mt-1">Student id is required</span>
               )}
             </div>
-            <div className="mb-4">
+               <div className="mb-4">
               <label htmlFor="bornDate" className="text-left block text-sm font-medium text-gray-700 mb-1">
                 Year of Birth
               </label>
               <input
-                type="number"
+                type="string"
                 id="bornDate"
                 className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 name="bornDate"
                 placeholder="YYYY"
                 value={formData.bornDate}
-                onChange={handleInputChange}
+                onChange={ handleInputChange }
                 min="1900" 
                 max="2100" 
+                step="1" 
               />
-              {showAlerts && !formData.bornDate && (
-                <span className="text-left block text-red-500 text-xs mt-1">Year of birth is required</span>
+               {showAlerts && !formData.studentId && (
+                <span className="text-left block text-red-500 text-xs mt-1"> Year of birth is required</span>
               )}
             </div>
 
@@ -165,28 +162,30 @@ const StudentForm: React.FC = () => {
               )}
             </div>
 
+         
+
             {/* Repeat similar input fields for assignments and exams */}
-            {Object.keys(fieldLabels).map((field, index) => (
-              <div key={index} className="mb-4">
-                <label htmlFor={field} className="text-left block text-sm font-medium text-gray-700 mb-1">
-                  {fieldLabels[field]} {/* Use the mapping for labels */}
-                </label>
-                <input
-                  type="number"
-                  id={field}
-                  className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`Score (0 - 100)`}
-                  name={field}
-                  value={formData[field as keyof FormData]}
-                  onChange={handleInputChange}
-                  min={0} // Example validation for numeric inputs
-                  max={100} // Example validation for numeric inputs
-                />
-                {showAlerts && !formData[field as keyof FormData] && (
-                  <span className="text-left block text-red-500 text-xs mt-1">{`${fieldLabels[field]} score is required`}</span>
-                )}
-              </div>
-            ))}
+         {Object.keys(fieldLabels).map((field, index) => (
+      <div key={index} className="mb-4">
+        <label htmlFor={field} className="text-left block text-sm font-medium text-gray-700 mb-1">
+          {fieldLabels[field]} {/* Use the mapping for labels */}
+        </label>
+        <input
+          type="number"
+          id={field}
+          className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Score (0-100)"
+          name={field}
+          value={formData[field as keyof FormData]}
+          onChange={handleInputChange}
+          min={0} // Example validation for numeric inputs
+          max={100} // Example validation for numeric inputs
+             />
+         {showAlerts && !formData.lastName && (
+            <span className="text-left block text-red-500 text-xs mt-1">{`${fieldLabels[field]} score`} is required</span>
+          )}
+      </div>
+        ) )}
 
             {/* Submit Button */}
             <div className='col-span-full flex justify-center mt-1'>
