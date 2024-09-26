@@ -1,43 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation, Link } from "react-router-dom";
 
 interface LocationState {
   fullName: string;
-
+  gpa: number;
 }
 
 const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
-
-    console.log(location)  // help debug the code 
-  const { fullName = "" } = (location.state as LocationState) || {};
   
-  const [gpa, setGpa] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  // Fetch GPA from Lambda URL
-  useEffect(() => {
-    const fetchGPA = async () => {
-      try {
-        const response = await fetch("https://your-lambda-url.com/getGPA"); // Replace with your Lambda URL
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setGpa(data.gpa); // Assuming the response contains a 'gpa' field
-      } catch (err) {
-          // Log the error to the console for debugging
-        console.error("Error fetching student result:", err);
-        setError("Failed to fetch GPA. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchGPA();
-  }, []);
-
+   const { fullName = "", gpa = 3.8 } = (location.state as LocationState) || {};
   const getLetterGrade = (gpa: number): string => {
     if (gpa >= 3.9) return "A+";
     if (gpa >= 3.7) return "A";
