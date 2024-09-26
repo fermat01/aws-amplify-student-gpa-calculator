@@ -67,10 +67,10 @@ const StudentForm: React.FC = () => {
       console.log('Parsed Body:', responseBody); // Log parsed body for debugging
 
       // Extract the GPA value
-      const gpa = responseBody.gpa;
+      const gpa = parseFloat(responseBody.gpa);
 
       // Log the extracted GPA value
-      console.log('Extracted GPA:', gpa); 
+      console.log('Extracted GPA:', gpa);
 
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
