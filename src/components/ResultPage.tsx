@@ -9,6 +9,7 @@ interface LocationState {
 const ResultPage: React.FC = () => {
   // Use useLocation to get the current location
   const location = useLocation();
+  
     console.log(location)  // help debug the code 
    const { fullName = "", gpa = 0 } = (location.state as LocationState) || {};
   const getLetterGrade = (gpa: number): string => {
