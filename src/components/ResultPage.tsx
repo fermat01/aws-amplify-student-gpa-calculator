@@ -61,7 +61,16 @@ case "A+":
 
   if (!fullName || gpa === undefined) {
    // console.log(fullName, gpa); // help debug the code 
-    return <div className=" text-red-500">No result found for this student.</div>;
+    return (<div className="flex flex-col items-center justify-center min-h-[50vh] bg-gray-100 p-8 rounded-lg shadow-md mx-auto my-20 max-w-md">
+  <h1 className="text-3xl font-bold text-red-600 mb-4">Unauthorized Operation</h1>
+  <p className="text-xl text-gray-700 mb-12">No result found for this student.</p>
+  <button 
+    onClick={() => window.location.href = '/'}
+    className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+  >
+    Go Back to Form
+  </button>
+</div>);
   }
 
   // Render the result page
