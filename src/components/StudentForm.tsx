@@ -51,11 +51,21 @@ const StudentForm: React.FC = () => {
       [name]: value,
     }));
   };
-
+const [errorMessage, setErrorMessage] = useState('');
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setShowAlerts(true);
+    setErrorMessage(''); 
+// Check if any field is empty
+const isAnyFieldEmpty = Object.values(formData).some(value => value === '');
 
+if (isAnyFieldEmpty) {
+  setErrorMessage('Please fill in all fields before submitting.');
+  return; // Stop form submission
+}
+  
+
+  
     try {
       // Send data to your API Gateway using Axios
       const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
@@ -96,7 +106,7 @@ const StudentForm: React.FC = () => {
             Student Information
           </h1>
           <p className="text-center text-gray-500 mb-8">
-            Please fill out the form below with the student's information and grades.
+            Please fill out the form below with the student's information and scores.
           </p>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="mb-4">
@@ -195,15 +205,22 @@ const StudentForm: React.FC = () => {
       </div>
         ) )}
 
-            {/* Submit Button */}
-            <div className='col-span-full flex justify-center mt-1'>
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Submit Student Information
-              </button>
-            </div>
+          {/* Error Message */}
+{errorMessage && (
+  <div className="col-span-full mb-4">
+    <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+  </div>
+)}
+
+{/* Submit Button */}
+<div className='col-span-full flex justify-center mt-1'>
+  <button
+    type="submit"
+    className="w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+  >
+    Submit Student Information
+  </button>
+</div>
           </form>
         </div>
       </div>
