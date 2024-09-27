@@ -61,7 +61,7 @@ case "A+":
 
   if (!fullName || gpa === undefined) {
    // console.log(fullName, gpa); // help debug the code 
-    return <div>No result found for this student.</div>;
+    return <div className=" text-red-500">No result found for this student.</div>;
   }
 
   // Render the result page
