@@ -1,61 +1,63 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import Joi from "joi";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
 const tableName = "gpa-dynamodb-table";
 
+const schema = Joi.object({
+  studentId: Joi.string().required(),
+  bornDate: Joi.string().required(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  assignment1: Joi.number().min(0).max(100).required(),
+  assignment2: Joi.number().min(0).max(100).required(),
+  assignment3: Joi.number().min(0).max(100).required(),
+  midterm1: Joi.number().min(0).max(100).required(),
+  midterm2: Joi.number().min(0).max(100).required(),
+  final: Joi.number().min(0).max(100).required(),
+});
+
+const calculateGPA = (scores) => {
+  const assignments =
+    (scores.assignment1 + scores.assignment2 + scores.assignment3) / 3;
+  const midterms = (scores.midterm1 + scores.midterm2) / 2;
+  const finalExam = scores.final;
+
+  const weightedScore = assignments * 0.3 + midterms * 0.4 + finalExam * 0.3;
+  return (weightedScore / 25).toFixed(2);
+};
+
 export const handler = async (event) => {
   try {
-    // Extract form data from event
-    const {
-      studentId,
-      bornDate,
-      firstName,
-      lastName,
-      assignment1,
-      assignment2,
-      assignment3,
-      midterm1,
-      midterm2,
-      final,
-    } = event;
+    const { error, value } = schema.validate(event, { abortEarly: false });
 
-    // Calculate GPA
-    const calculateGPA = () => {
-      const assignments =
-        (parseFloat(assignment1) +
-          parseFloat(assignment2) +
-          parseFloat(assignment3)) /
-        3;
-      const midterms = (parseFloat(midterm1) + parseFloat(midterm2)) / 2;
-      const finalExam = parseFloat(final);
+    if (error) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Validation error",
+          details: error.details,
+        }),
+      };
+    }
 
-      // Assuming weights: Assignments 30%, Midterms 40%, Final 30%
-      const weightedScore =
-        assignments * 0.3 + midterms * 0.4 + finalExam * 0.3;
+    const gpa = calculateGPA(value);
 
-      // Convert to 4.0 scale (assuming 100-point scale input)
-      return (weightedScore / 25).toFixed(2);
-    };
-
-    const gpa = calculateGPA();
-
-    // Prepare item for DynamoDB
     const item = {
-      studentId,
-      bornDate: bornDate,
-      fullName: firstName + lastName,
-      assignment1: parseFloat(assignment1),
-      assignment2: parseFloat(assignment2),
-      assignment3: parseFloat(assignment3),
-      midterm1: parseFloat(midterm1),
-      midterm2: parseFloat(midterm2),
-      final: parseFloat(final),
+      studentId: value.studentId,
+      bornDate: value.bornDate,
+      fullName: `${value.firstName} ${value.lastName}`,
+      assignment1: value.assignment1,
+      assignment2: value.assignment2,
+      assignment3: value.assignment3,
+      midterm1: value.midterm1,
+      midterm2: value.midterm2,
+      final: value.final,
       gpa: parseFloat(gpa),
     };
 
-    // Store in DynamoDB
     const command = new PutCommand({
       TableName: tableName,
       Item: item,

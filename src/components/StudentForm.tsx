@@ -68,7 +68,8 @@ if (isAnyFieldEmpty) {
   
     try {
       // Send data to your API Gateway using Axios
-      const response = await axios.post("https://wgtwz7uew2.execute-api.us-east-1.amazonaws.com/Dev", formData);
+ 
+      const response = await axios.post("https://tjpm10slf3.execute-api.us-east-1.amazonaws.com/dev", formData);
 
       if (response.status === 200) {
         // Assuming your Lambda function returns the calculated GPA in response.data.gpa
