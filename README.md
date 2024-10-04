@@ -1,5 +1,27 @@
-# React + TypeScript + Vite
+# aws-amplify-student-gpa-calculator
 
+
+![GitHub](https://img.shields.io/github/license/fermat01/Building-serverless-video-streaming-app?style=flat)
+
+![GitHub top language](https://img.shields.io/github/languages/top/fermat01/aws-amplify-student-gpa-calculator?style=flat)
+![GitHub language count](https://img.shields.io/github/languages/count/fermat01/aws-amplify-student-gpa-calculator?style=flat)
+![GitHub last commit](https://img.shields.io/github/last-commit/fermat01/aws-amplify-student-gpa-calculator?style=flat)
+![ViewCount](https://views.whatilearened.today/views/github/fermat01/aws-amplify-student-gpa-calculator.svg?cache=remove)
+## What you will learn
+
+
+## Requirements
+
+## Use case and problem statement
+
+## Architecture
+
+ <img src="./src/assets/Amplify-gpa-architecture.gif" width=""/>
+
+
+
+
+#
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
