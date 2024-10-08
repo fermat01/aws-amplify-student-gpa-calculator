@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import StudentIdAlreadyExists from "./StudentIdAlreadyExists";
 
 // Define a mapping for field names to user-friendly labels
 const fieldLabels: { [key: string]: string } = {
@@ -13,7 +14,7 @@ const fieldLabels: { [key: string]: string } = {
 };
 
 type FormData = {
-  studentId: string;
+  studentId: string;  // Add this line
   firstName: string;
   lastName: string;
   bornDate: string;
@@ -26,7 +27,7 @@ type FormData = {
 };
 
 const initialFormData: FormData = {
-  studentId: "",
+  studentId: "",  // Add this line
   firstName: "",
   lastName: "",
   bornDate: "",
@@ -40,29 +41,64 @@ const initialFormData: FormData = {
 
 const StudentForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-
   const [showAlerts, setShowAlerts] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showIdExistsError, setShowIdExistsError] = useState(false);
+  const [studentIdError, setStudentIdError] = useState('');
   const navigate = useNavigate();
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = event.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name === 'studentId') {
+      // Allow only digits, uppercase letters, and limit to 10 characters
+      const formattedValue = value.replace(/[^0-9A-Z]/g, '').slice(0, 10);
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: formattedValue,
+      }));
+      validateStudentId(formattedValue);
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  const validateStudentId = (value: string) => {
+    const regex = /^(\d{4})([A-Z]{2})(\d{4})$/;
+    if (!regex.test(value)) {
+      setStudentIdError('Student ID must be in the format: YYYYAB1234');
+    } else {
+      const year = parseInt(value.slice(0, 4));
+      const currentYear = new Date().getFullYear();
+      if (year < currentYear-2 || year > currentYear ) {
+       setStudentIdError(`Year must be between ${currentYear - 2} and ${currentYear}`);
+      } else {
+        setStudentIdError('');
+      }
+    }
   };
 
   const resetForm = () => {
     setFormData(initialFormData);
+    setShowAlerts(false);
+    setErrorMessage('');
+    setShowIdExistsError(false);
+    setStudentIdError('');
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setShowAlerts(true);
     setErrorMessage('');
+    setShowIdExistsError(false);
+
+    if (studentIdError) {
+      return; // Stop form submission if student ID is invalid
+    }
 
     // Check if any field is empty
     const isAnyFieldEmpty = Object.values(formData).some(value => value === '');
@@ -79,21 +115,17 @@ const StudentForm: React.FC = () => {
       const response = await axios.post(apiUrl, formData);
 
       if (response.status === 200) {
-        // Assuming your Lambda function returns the calculated GPA in response.data.body
         const responseBody = JSON.parse(response.data.body);
-        console.log('Parsed Body:', responseBody); // Log parsed body for debugging
+        console.log('Parsed Body:', responseBody);
 
         // Check if there's an error message in the response
         if (responseBody.message && responseBody.message.includes("has already submitted their scores")) {
-          setErrorMessage(`Student with ID ${formData.studentId} has already submitted their scores. Please contact student services for more information.`);
-          resetForm(); // Reset all input fields
+          setShowIdExistsError(true);
           return;
         }
 
         // Extract the GPA value
         const gpa = parseFloat(responseBody.gpa);
-
-        // Log the extracted GPA value
         console.log('Extracted GPA:', gpa);
 
         // Navigate to ResultPage with calculated GPA and full name
@@ -104,7 +136,6 @@ const StudentForm: React.FC = () => {
     } catch (error) {
       console.error(`Error submitting form:`, error);
       if (axios.isAxiosError(error) && error.response) {
-        // If the error is from Axios and has a response
         const responseBody = error.response.data;
         if (typeof responseBody === 'string') {
           try {
@@ -125,6 +156,9 @@ const StudentForm: React.FC = () => {
     }
   };
 
+  if (showIdExistsError) {
+    return <StudentIdAlreadyExists studentId={formData.studentId} onGoBack={resetForm} />;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -143,16 +177,19 @@ const StudentForm: React.FC = () => {
               </label>
               <input
                 id="studentId"
-                className="w-full rounded-lg p-3 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Student ID"
+                className={`w-full rounded-lg p-3 text-sm border ${
+                  studentIdError ? 'border-red-500' : 'border-gray-300'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="YYYYAA1234"
                 name="studentId"
                 value={formData.studentId}
                 onChange={handleInputChange}
               />
-              {showAlerts && !formData.studentId && (
-                <span className="text-left block text-red-500 text-xs mt-1">Student id is required</span>
+              {studentIdError && (
+                <span className="text-left block text-red-500 text-xs mt-1">{studentIdError}</span>
               )}
             </div>
+
                <div className="mb-4">
               <label htmlFor="bornDate" className="text-left block text-sm font-medium text-gray-700 mb-1">
                 Year of Birth
