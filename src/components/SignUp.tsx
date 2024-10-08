@@ -13,10 +13,27 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear previous error messages
+    setErrorMessage('');
+    setEmailError('');
+
+    if (!email) {
+      setEmailError('Email is required');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match");
@@ -29,9 +46,8 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
     } catch (error) {
       console.error('Error signing up:', error);
 
-      // Use a type guard to check if the error is an instance of Error
       if (error instanceof Error) {
-        setErrorMessage(error.message); // Display the error message from the caught error
+        setErrorMessage(error.message);
       } else {
         setErrorMessage('An unknown error occurred. Please try again.');
       }
@@ -45,9 +61,8 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
     } catch (error) {
       console.error('Error confirming sign up:', error);
       
-      // Use a type guard to check if the error is an instance of Error
       if (error instanceof Error) {
-        setErrorMessage(error.message); // Display the error message from the caught error
+        setErrorMessage(error.message);
       } else {
         setErrorMessage('An unknown error occurred during confirmation. Please try again.');
       }
@@ -63,14 +78,24 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
       {errorMessage && (
         <div className="text-red-500">{errorMessage}</div>
       )}
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className="w-full px-3 py-2 border rounded"
-        required
-      />
+      <div>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailError('');
+          }}
+          onBlur={() => {
+            if (email && !validateEmail(email)) {
+              setEmailError('Please enter a valid email address');
+            }
+          }}
+          placeholder="Email"
+          className={`w-full px-3 py-2 border rounded ${emailError ? 'border-red-500' : ''}`}
+        />
+        {emailError && <div className="text-red-500 text-sm mt-1">{emailError}</div>}
+      </div>
       <PasswordInput
         value={password}
         onChange={(e) => setPassword(e.target.value)}

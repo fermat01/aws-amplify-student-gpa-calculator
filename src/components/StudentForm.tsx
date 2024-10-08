@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios"; // Import Axios
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // Define a mapping for field names to user-friendly labels
@@ -11,6 +11,7 @@ const fieldLabels: { [key: string]: string } = {
   midterm2: "Second Midterm",
   final: "Final Exam",
 };
+
 type FormData = {
   studentId: string;
   firstName: string;
@@ -24,23 +25,25 @@ type FormData = {
   final: string;
 };
 
-const StudentForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    studentId: "",
-    firstName: "",
-    lastName: "",
-    bornDate: "",
-    assignment1: "",
-    assignment2: "",
-    assignment3: "",
-    midterm1: "",
-    midterm2: "",
-    final: "",
-  });
-  
+const initialFormData: FormData = {
+  studentId: "",
+  firstName: "",
+  lastName: "",
+  bornDate: "",
+  assignment1: "",
+  assignment2: "",
+  assignment3: "",
+  midterm1: "",
+  midterm2: "",
+  final: "",
+};
 
-  const [ showAlerts, setShowAlerts ] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
+const StudentForm: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -51,49 +54,73 @@ const StudentForm: React.FC = () => {
       [name]: value,
     }));
   };
-const [errorMessage, setErrorMessage] = useState('');
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setShowAlerts(true);
-    setErrorMessage(''); 
-// Check if any field is empty
-const isAnyFieldEmpty = Object.values(formData).some(value => value === '');
+    setErrorMessage('');
 
-if (isAnyFieldEmpty) {
-  setErrorMessage('Please fill in all fields before submitting.');
-  return; // Stop form submission
-}
-  
-const apiUrl = import.meta.env.VITE_API_URL; // For Vite
-  
+    // Check if any field is empty
+    const isAnyFieldEmpty = Object.values(formData).some(value => value === '');
+
+    if (isAnyFieldEmpty) {
+      setErrorMessage('Please fill in all fields before submitting.');
+      return; // Stop form submission
+    }
+
+    const apiUrl = import.meta.env.VITE_API_URL; // For Vite
+
     try {
       // Send data to your API Gateway using Axios
- 
       const response = await axios.post(apiUrl, formData);
 
       if (response.status === 200) {
-        // Assuming your Lambda function returns the calculated GPA in response.data.gpa
-      // Step to parse the body and extract GPA
-      const responseBody = JSON.parse(response.data.body);
-      console.log('Parsed Body:', responseBody); // Log parsed body for debugging
+        // Assuming your Lambda function returns the calculated GPA in response.data.body
+        const responseBody = JSON.parse(response.data.body);
+        console.log('Parsed Body:', responseBody); // Log parsed body for debugging
 
-      // Extract the GPA value
-      const gpa = parseFloat(responseBody.gpa);
+        // Check if there's an error message in the response
+        if (responseBody.message && responseBody.message.includes("has already submitted their scores")) {
+          setErrorMessage(`Student with ID ${formData.studentId} has already submitted their scores. Please contact student services for more information.`);
+          resetForm(); // Reset all input fields
+          return;
+        }
 
-      // Log the extracted GPA value
-      console.log('Extracted GPA:', gpa);
+        // Extract the GPA value
+        const gpa = parseFloat(responseBody.gpa);
+
+        // Log the extracted GPA value
+        console.log('Extracted GPA:', gpa);
 
         // Navigate to ResultPage with calculated GPA and full name
         navigate("/result", {
-          state: { fullName: `${ formData.firstName } ${ formData.lastName }`, gpa },
-     
-     
-          
+          state: { fullName: `${formData.firstName} ${formData.lastName}`, gpa },
         });
       }
     } catch (error) {
-      console.error(`Error submitting form: ${error}`);
-      // Optionally handle error state here
+      console.error(`Error submitting form:`, error);
+      if (axios.isAxiosError(error) && error.response) {
+        // If the error is from Axios and has a response
+        const responseBody = error.response.data;
+        if (typeof responseBody === 'string') {
+          try {
+            const parsedBody = JSON.parse(responseBody);
+            setErrorMessage(parsedBody.message || 'An error occurred while submitting the form.');
+          } catch {
+            setErrorMessage(responseBody || 'An error occurred while submitting the form.');
+          }
+        } else if (responseBody && responseBody.message) {
+          setErrorMessage(responseBody.message);
+        } else {
+          setErrorMessage('An error occurred while submitting the form.');
+        }
+      } else {
+        setErrorMessage('An unexpected error occurred.');
+      }
       setShowAlerts(true);
     }
   };
@@ -102,7 +129,7 @@ const apiUrl = import.meta.env.VITE_API_URL; // For Vite
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-lg bg-white p-8 rounded-lg shadow-md">
+        <div className="mx-auto max-w-lg bg-white p-8 rounded-lg shadow-md ">
           <h1 className="text-center text-2xl font-bold text-blue-600 sm:text-3xl mb-6">
             Student Information
           </h1>

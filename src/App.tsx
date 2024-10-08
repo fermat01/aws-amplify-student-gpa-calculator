@@ -59,7 +59,7 @@ const App: React.FC = () => {
               <SignIn onSignIn={handleSignIn} />
               <button
                 onClick={() => setAuthMode('forgotPassword')}
-                className="mt-2 text-sm text-blue-500 hover:underline mb-3 p-4"
+                className="mt-4  text-blue-500 hover:underline mb-3 p-4"
               >
                 Forgot Password?
               </button>
@@ -74,7 +74,7 @@ const App: React.FC = () => {
           )}
           <button
             onClick={() => setAuthMode(authMode === 'signIn' ? 'signUp' : 'signIn')}
-            className="mt-4 text-blue-500 hover:underline"
+            className="mt-4  text-blue-500 hover:underline "
           >
             {authMode === 'signIn' ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
           </button>
