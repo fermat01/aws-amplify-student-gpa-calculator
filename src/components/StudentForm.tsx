@@ -185,6 +185,9 @@ const StudentForm: React.FC = () => {
                 value={formData.studentId}
                 onChange={handleInputChange}
               />
+                  {showAlerts && !formData.studentId && (
+                <span className="text-left block text-red-500 text-xs mt-1"> Your student ID is required</span>
+              )}
               {studentIdError && (
                 <span className="text-left block text-red-500 text-xs mt-1">{studentIdError}</span>
               )}
@@ -206,7 +209,7 @@ const StudentForm: React.FC = () => {
                 max="2100" 
                 step="1" 
               />
-               {showAlerts && !formData.studentId && (
+               {showAlerts && !formData.bornDate && (
                 <span className="text-left block text-red-500 text-xs mt-1"> Year of birth is required</span>
               )}
             </div>
@@ -262,7 +265,8 @@ const StudentForm: React.FC = () => {
           value={formData[field as keyof FormData]}
           onChange={handleInputChange}
           min={0} // Example validation for numeric inputs
-          max={100} // Example validation for numeric inputs
+          max={ 100 } // Example validation for numeric inputs
+          
              />
          {showAlerts && !formData.lastName && (
             <span className="text-left block text-red-500 text-xs mt-1">{`${fieldLabels[field]} score`} is required</span>
