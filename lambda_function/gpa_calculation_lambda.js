@@ -1,69 +1,89 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import Joi from "joi";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  GetCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
 const tableName = "gpa-dynamodb-table";
 
-const schema = Joi.object({
-  studentId: Joi.string().required(),
-  bornDate: Joi.string().required(),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  assignment1: Joi.number().min(0).max(100).required(),
-  assignment2: Joi.number().min(0).max(100).required(),
-  assignment3: Joi.number().min(0).max(100).required(),
-  midterm1: Joi.number().min(0).max(100).required(),
-  midterm2: Joi.number().min(0).max(100).required(),
-  final: Joi.number().min(0).max(100).required(),
-});
-
-const calculateGPA = (scores) => {
-  const assignments =
-    (scores.assignment1 + scores.assignment2 + scores.assignment3) / 3;
-  const midterms = (scores.midterm1 + scores.midterm2) / 2;
-  const finalExam = scores.final;
-
-  const weightedScore = assignments * 0.3 + midterms * 0.4 + finalExam * 0.3;
-  return (weightedScore / 25).toFixed(2);
-};
-
 export const handler = async (event) => {
   try {
-    const { error, value } = schema.validate(event, { abortEarly: false });
+    // Extract form data from event
+    const {
+      studentId,
+      bornDate,
+      firstName,
+      lastName,
+      assignment1,
+      assignment2,
+      assignment3,
+      midterm1,
+      midterm2,
+      final,
+    } = event;
 
-    if (error) {
+    // Check if the student already exists
+    const getCommand = new GetCommand({
+      TableName: tableName,
+      Key: { studentId },
+    });
+
+    const existingStudent = await dynamo.send(getCommand);
+
+    // If student already exists, return a message
+    if (existingStudent.Item) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message: "Validation error",
-          details: error.details,
+          message: `Student with ID ${studentId} has already submitted their scores. Please contact student services for more information.`,
         }),
       };
     }
 
-    const gpa = calculateGPA(value);
+    // Calculate GPA
+    const calculateGPA = () => {
+      const assignments =
+        (parseFloat(assignment1) +
+          parseFloat(assignment2) +
+          parseFloat(assignment3)) /
+        3;
+      const midterms = (parseFloat(midterm1) + parseFloat(midterm2)) / 2;
+      const finalExam = parseFloat(final);
 
+      // Assuming weights: Assignments 30%, Midterms 40%, Final 30%
+      const weightedScore =
+        assignments * 0.3 + midterms * 0.4 + finalExam * 0.3;
+
+      // Convert to 4.0 scale (assuming 100-point scale input)
+      return (weightedScore / 25).toFixed(2);
+    };
+
+    const gpa = calculateGPA();
+
+    // Prepare item for DynamoDB
     const item = {
-      studentId: value.studentId,
-      bornDate: value.bornDate,
-      fullName: `${value.firstName} ${value.lastName}`,
-      assignment1: value.assignment1,
-      assignment2: value.assignment2,
-      assignment3: value.assignment3,
-      midterm1: value.midterm1,
-      midterm2: value.midterm2,
-      final: value.final,
+      studentId,
+      bornDate: bornDate,
+      fullName: firstName + " " + lastName,
+      assignment1: parseFloat(assignment1),
+      assignment2: parseFloat(assignment2),
+      assignment3: parseFloat(assignment3),
+      midterm1: parseFloat(midterm1),
+      midterm2: parseFloat(midterm2),
+      final: parseFloat(final),
       gpa: parseFloat(gpa),
     };
 
-    const command = new PutCommand({
+    // Store in DynamoDB
+    const putCommand = new PutCommand({
       TableName: tableName,
       Item: item,
     });
 
-    await dynamo.send(command);
+    await dynamo.send(putCommand);
 
     return {
       statusCode: 200,

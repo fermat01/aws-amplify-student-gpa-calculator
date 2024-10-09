@@ -29,8 +29,19 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onCancel, onSuccess }) 
   };
 
   const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    return passwordRegex.test(password);
+    const minLength = 8;
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+
+    return (
+      password.length >= minLength &&
+      hasNumber &&
+      hasSpecialChar &&
+      hasUppercase &&
+      hasLowercase
+    );
   };
 
   const handleRequestReset = async (e: React.FormEvent) => {
@@ -69,7 +80,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onCancel, onSuccess }) 
     }
 
     if (!validatePassword(newPassword)) {
-      setPasswordError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number');
+      setPasswordError(
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+      );
       return;
     }
 
@@ -151,7 +164,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onCancel, onSuccess }) 
             }}
             onBlur={() => {
               if (newPassword && !validatePassword(newPassword)) {
-                setPasswordError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number');
+                setPasswordError(
+                  'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+                );
               }
             }}
             placeholder="New Password"
