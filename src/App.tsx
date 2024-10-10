@@ -53,26 +53,24 @@ const App: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-96 ">
-          <div className="flex justify-center items-center mb-6">
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setAuthMode('signIn')}
-                className={`px-4 py-2 rounded ${
-                  authMode === 'signIn' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setAuthMode('signUp')}
-                className={`px-4 py-2 rounded ${
-                  authMode === 'signUp' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                Create Account
-              </button>
-            </div>
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-[450px]">
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={() => setAuthMode('signIn')}
+              className={`px-5 py-2 rounded ${
+                authMode === 'signIn' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setAuthMode('signUp')}
+              className={`px-4 py-2 rounded ${
+                authMode === 'signUp' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+            >
+              Create Account
+            </button>
           </div>
 
           {authMode !== 'forgotPassword' && (
