@@ -1,11 +1,10 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Amplify } from 'aws-amplify';
-import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
-import SignOut from './components/SignOut';
-import ForgotPassword from './components/ForgotPassword';
+import SignIn from './components/auth/SignIn';
+import SignUp from './components/auth/SignUp';
+import SignOut from './components/auth/SignOut';
+import ForgotPassword from './components/auth/ForgotPassword';
 import StudentForm from './components/StudentForm';
 import ResultPage from './components/ResultPage';
 import UnauthorizedAccess from './components/UnauthorizedAccess';
@@ -29,11 +28,11 @@ Amplify.configure({
     },
   },
 });
+
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authMode, setAuthMode] = useState<'signIn' | 'signUp' | 'forgotPassword'>('signIn');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showExtraOptions, setShowExtraOptions] = useState(false);
 
   const handleSignIn = () => setIsAuthenticated(true);
   const handleSignUp = () => {
@@ -50,48 +49,61 @@ const App: React.FC = () => {
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const toggleExtraOptions = () => setShowExtraOptions(!showExtraOptions);
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded shadow-md w-96">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">
-              {authMode === 'signIn' ? 'Sign In' : authMode === 'signUp' ? 'Sign Up' : 'Forgot Password'}
-            </h2>
-            <button
-              onClick={toggleExtraOptions}
-              className="text-red-500 hover:text-blue-700 focus:outline-none"
-            >
-              {showExtraOptions ? 'Hide Options' : 'More Options'}
-            </button>
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-96 ">
+          <div className="flex justify-center items-center mb-6">
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setAuthMode('signIn')}
+                className={`px-4 py-2 rounded ${
+                  authMode === 'signIn' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setAuthMode('signUp')}
+                className={`px-4 py-2 rounded ${
+                  authMode === 'signUp' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Create Account
+              </button>
+            </div>
           </div>
-          
-          {showExtraOptions && (
-            <div className="flex justify-between mb-4">
+
+          {authMode !== 'forgotPassword' && (
+            <h2 className="text-2xl font-bold text-center mb-6">
+              {authMode === 'signIn' ? 'Sign In' : 'Create Account'}
+            </h2>
+          )}
+
+          <div className="flex space-x-8">
+            <div className={`w-full ${authMode === 'signIn' ? 'block' : 'hidden'}`}>
+              <SignIn onSignIn={handleSignIn} />
               <button
                 onClick={() => setAuthMode('forgotPassword')}
-                className="text-sm text-blue-500 hover:underline"
+                className="mt-4 text-sm text-blue-500 hover:underline"
               >
                 Forgot Password?
               </button>
-              <button
-                onClick={() => setAuthMode(authMode === 'signIn' ? 'signUp' : 'signIn')}
-                className="text-sm text-blue-500 hover:underline"
-              >
-                {authMode === 'signIn' ? 'Need an account?' : 'Already have an account?'}
-              </button>
             </div>
-          )}
+            <div className={`w-full ${authMode === 'signUp' ? 'block' : 'hidden'}`}>
+              <SignUp onSignUp={handleSignUp} />
+            </div>
+          </div>
 
-          {authMode === 'signIn' && <SignIn onSignIn={handleSignIn} />}
-          {authMode === 'signUp' && <SignUp onSignUp={handleSignUp} />}
           {authMode === 'forgotPassword' && (
-            <ForgotPassword
-              onCancel={() => setAuthMode('signIn')}
-              onSuccess={handleForgotPasswordSuccess}
-            />
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-4">Forgot Password</h3>
+              <ForgotPassword
+                onCancel={() => setAuthMode('signIn')}
+                onSuccess={handleForgotPasswordSuccess}
+              />
+            </div>
           )}
         </div>
       </div>
