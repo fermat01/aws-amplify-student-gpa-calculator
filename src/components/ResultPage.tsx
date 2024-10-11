@@ -90,7 +90,7 @@ case "A+":
           </h3>
           <p className="text-green-600 mb-6 font-italic">{getCongratulationMessage(gpa)}</p>
           <Link 
-            to="/form" 
+            to="/" 
             className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
           >
             Back to Form

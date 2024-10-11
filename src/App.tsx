@@ -125,7 +125,7 @@ const App: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
           <main className="flex flex-col items-center justify-center">
             <Routes>
-              <Route path="/form" element={<StudentForm />} />
+              <Route path="/" element={<StudentForm />} />
               <Route path="/result" element={<ResultPage />} />
               <Route path="/unauthorized" element={<UnauthorizedAccess />} />
               <Route path="*" element={<Navigate to="/unauthorized" replace />} />
