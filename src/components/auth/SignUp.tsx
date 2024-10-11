@@ -74,11 +74,11 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
   }
 
   return (
-    <form onSubmit={handleSignUp} className="space-y-4">
+    <form onSubmit={handleSignUp} className="w-full">
       {errorMessage && (
-        <div className="text-red-500">{errorMessage}</div>
+        <div className="text-red-500 mb-4">{errorMessage}</div>
       )}
-      <div>
+      <div className="mb-4">
         <input
           type="email"
           value={email}
@@ -92,23 +92,27 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
             }
           }}
           placeholder="Email"
-          className={`w-full px-3 py-2 border rounded ${emailError ? 'border-red-500' : ''}`}
+          className={`w-full px-3 py-2 border rounded ${emailError ? 'border-red-500' : 'border-gray-300'}`}
         />
         {emailError && <div className="text-red-500 text-sm mt-1">{emailError}</div>}
       </div>
-      <PasswordInput
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        id="password"
-      />
-      <PasswordInput
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm Password"
-        id="confirm-password"
-      />
-      <button type="submit" className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-600">
+      <div className="mb-4">
+        <PasswordInput
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          id="password"
+        />
+      </div>
+      <div className="mb-4">
+        <PasswordInput
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm Password"
+          id="confirm-password"
+        />
+      </div>
+      <button type="submit" className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-blue-600 transition-colors">
         Sign Up
       </button>
     </form>

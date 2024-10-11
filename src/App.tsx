@@ -8,7 +8,7 @@ import ForgotPassword from './components/auth/ForgotPassword';
 import StudentForm from './components/StudentForm';
 import ResultPage from './components/ResultPage';
 import UnauthorizedAccess from './components/UnauthorizedAccess';
-import './App.css';
+//import './App.css';
 
 // Retrieve environment variables using import.meta.env
 const userPoolClientId = import.meta.env.VITE_USER_POOL_CLIENT_ID;
@@ -53,24 +53,30 @@ const App: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-[450px]">
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => setAuthMode('signIn')}
-              className={`px-5 py-2 rounded ${
-                authMode === 'signIn' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setAuthMode('signUp')}
-              className={`px-4 py-2 rounded ${
-                authMode === 'signUp' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Create Account
-            </button>
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-[480px]">
+          <div className="mb-8">
+            <div className="flex bg-gray-200 p-1 rounded-lg">
+              <button
+                onClick={() => setAuthMode('signIn')}
+                className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
+                  authMode === 'signIn'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setAuthMode('signUp')}
+                className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
+                  authMode === 'signUp'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Create Account
+              </button>
+            </div>
           </div>
 
           {authMode !== 'forgotPassword' && (
@@ -79,17 +85,21 @@ const App: React.FC = () => {
             </h2>
           )}
 
-          <div className="flex space-x-8">
-            <div className={`w-full ${authMode === 'signIn' ? 'block' : 'hidden'}`}>
+          <div className="relative">
+            <div className={`transition-all duration-300 ${
+              authMode === 'signIn' ? 'opacity-100 visible' : 'opacity-0 invisible absolute top-0 left-0 w-full'
+            }`}>
               <SignIn onSignIn={handleSignIn} />
               <button
                 onClick={() => setAuthMode('forgotPassword')}
-                className="mt-4 text-sm text-blue-500 hover:underline"
+                className="mt-4 text-sm  text-blue-500 hover:underline w-full flex items-center justify-center h-10"
               >
                 Forgot Password?
               </button>
             </div>
-            <div className={`w-full ${authMode === 'signUp' ? 'block' : 'hidden'}`}>
+            <div className={`transition-all duration-300 ${
+              authMode === 'signUp' ? 'opacity-100 visible' : 'opacity-0 invisible absolute top-0 left-0 w-full'
+            }`}>
               <SignUp onSignUp={handleSignUp} />
             </div>
           </div>
@@ -115,7 +125,7 @@ const App: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
           <main className="flex flex-col items-center justify-center">
             <Routes>
-              <Route path="/" element={<StudentForm />} />
+              <Route path="/form" element={<StudentForm />} />
               <Route path="/result" element={<ResultPage />} />
               <Route path="/unauthorized" element={<UnauthorizedAccess />} />
               <Route path="*" element={<Navigate to="/unauthorized" replace />} />

@@ -23,18 +23,20 @@ const PasswordInput: React.FC<PasswordInputProps> = ({ value, onChange, placehol
         onChange={onChange}
         placeholder={placeholder}
         id={id}
-        className="w-full px-3 py-2 border rounded pr-10"
+        className="w-full px-3 py-2 border rounded pr-10" // Adjusted right padding
       />
       <button
         type="button"
         onClick={togglePasswordVisibility}
-        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        className="absolute inset-y-0 right-0 flex items-center justify-center"
       >
-        {showPassword ? (
-          <EyeOffIcon className="h-5 w-5 text-gray-500" />
-        ) : (
-          <EyeIcon className="h-5 w-5 text-gray-500" />
-        )}
+        <div className="bg-gray-200 h-full px-3 flex items-center justify-center rounded-r"> {/* Adjusted to fill height */}
+          {showPassword ? (
+            <EyeOffIcon className="h-4 w-4 text-gray-600" />
+          ) : (
+            <EyeIcon className="h-4 w-4 text-gray-600" />
+          )}
+        </div>
       </button>
     </div>
   );

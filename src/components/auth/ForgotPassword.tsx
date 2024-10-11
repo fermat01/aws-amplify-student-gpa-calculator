@@ -152,8 +152,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onCancel, onSuccess }) 
         />
         {codeError && <div className="text-red-500 text-sm mt-1">{codeError}</div>}
       </div>
-      <div className="relative">
-        <div className="relative">
+      <div>
+        <div className={`relative flex items-center border rounded ${passwordError ? 'border-red-500' : ''}`}>
           <input
             type={showPassword ? "text" : "password"}
             value={newPassword}
@@ -169,17 +169,17 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onCancel, onSuccess }) 
               }
             }}
             placeholder="New Password"
-            className={`w-full px-3 py-2 border rounded pr-10 ${passwordError ? 'border-red-500' : ''}`}
+            className="w-full px-3 py-2 rounded-l focus:outline-none"
           />
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute inset-y-0 right-0 px-3 flex items-center"
+            className="bg-gray-200 h-full w-12 flex items-center justify-center"
           >
             {showPassword ? (
-              <EyeOffIcon className="h-5 w-5 text-gray-500" />
+              <EyeOffIcon className="h-10 w-5 text-gray-600" />
             ) : (
-              <EyeIcon className="h-5 w-5 text-gray-500" />
+              <EyeIcon className="h-10 w-5 text-gray-600" />
             )}
           </button>
         </div>

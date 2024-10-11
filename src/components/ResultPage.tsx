@@ -65,14 +65,14 @@ case "A+":
   <h1 className="text-3xl font-bold text-red-600 mb-4">Unauthorized Operation</h1>
   <p className="text-xl text-gray-700 mb-12">No result found for this student.</p>
   <button 
-    onClick={() => window.location.href = '/'}
+    onClick={() => window.location.href = '/form'}
     className="bg-blue-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
   >
     Go Back to Form
   </button>
 </div>);
   }
-
+  //2023HA0376
   // Render the result page
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -90,7 +90,7 @@ case "A+":
           </h3>
           <p className="text-green-600 mb-6 font-italic">{getCongratulationMessage(gpa)}</p>
           <Link 
-            to="/" 
+            to="/form" 
             className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
           >
             Back to Form
