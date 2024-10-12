@@ -27,7 +27,7 @@ The application leverages several AWS services to create a robust, scalable, and
 3. **Amazon DynamoDB**: Acts as the NoSQL database to store and retrieve student scores and calculated GPAs.
 4. **Amazon API Gateway**: Manages the RESTful API endpoints, facilitating communication between the frontend and backend services.
 5. **AWS IAM and Amazon Cognito**: Ensure secure user authentication and authorization, protecting sensitive student data and controlling access to AWS resources
-   
+All services will be created in **us-east-1 region**
 <br>
  <img src="./src/assets/Amplify-gpa-architecture02.gif" width=""/>
 
@@ -41,12 +41,91 @@ The application leverages several AWS services to create a robust, scalable, and
 
 
  #### 2. Create an AWS Lambda function
-   ...
+ - Go to lambda service in AWS console and  select  **Create a function**.
+
+ <img src="./src/public/imgs/lambda1.png" width=""/>
+
+
+- In the lambda create page you can give a lambda function name and you can select Runtime environment. Let's  call our function as ```Gpa-LambdaFucntion02``` and as  runtime, select Node.js 20. Leave other settings default, and then select the Create function.
+
+ <img src="./src/public/imgs/lambda2.png" width=""/>
+
+- After lambda function created, we can edit our lambda function. Copy and paste given code in lambda_function folder called gpa_calculation_lambda.js into lambda online editor as a showing on the below screenshot then click Deploy button to deploy your lambda function.
+- 
+ <img src="./src/public/imgs/lambda3.png" width=""/>
+
+- In left side click on  **Additional ressources** and **Layers** then **Create Layer**
+
+ <img src="./src/public/imgs/lambda_layer.png" width=""/>
+
+- In lambda_function folder, there is zip file called  ``` joi-layer.zip ```, upload it and click  **Create**
+
+ <img src="./src/public/imgs/lambda_layer2.png" width=""/>
+
+ - After updated lambda function deployed Click Test button. Now let's create test event for testing  lambda function. Give name for test event and modify the event JSON as showing in the screenshot and then click Save button.
+
+``` 
+{
+  "studentId": "2024AT0014",
+  "firstName": "Mike",
+  "lastName": "Billy",
+  "assignment1": "78",
+  "assignment2": "85",
+  "assignment3": "68",
+  "midterm1": "98",
+  "midterm2": "79",
+  "final": "87"
+}
+```
+
+ <img src="./src/public/imgs/lambda_event.png" width=""/>
+
+- Now click again Test button and check execution test result.
+
+ <img src="./src/public/imgs/lambda-test.png" width=""/>
+
 
  #### 3. Create Rest API using API Gateway
 
+After  successfully created lambda function, we need API to communicate between our React app and lambda function, for that we will use AWS API Gateway service.
 
-   ...
+- Go to API gateway service in AWS console and select **REST API** option and click the Build.
+
+ <img src="./src/public/imgs/api1.png" width=""/>
+
+- Now click the Create Method button and then you will redirect to API creation page. 
+
+ <img src="./src/public/imgs/api-createMethod.png" width=""/>
+
+- At the API creation page as a method type select the POST and then select the Lambda function as an integration type and choose, we earlier create lambda function from dropdown and click Create method button to create a POST API for our application.
+
+ <img src="./src/public/imgs/api-createMethod2.png" width=""/>
+
+- Now we need to enable CORS settings. Select the “/” option above the newly created POST method.
+
+
+ <img src="./src/public/imgs/api-createMethod3.png" width=""/>
+
+
+- In the CORS setting, tick the POST method under the Access-Control-Allow-Methods, leave the other settings default and click the Save button.
+
+
+ <img src="./src/public/imgs/api-createMethod4.png" width=""/>
+
+- After enabling the CORS, we need to deploy our API, so to do that click the Deploy button on the left side upper corner.
+
+
+- **Create GET method with ressource path check-student with same process as POST method**
+  
+- And the final result will look like:
+  
+
+ <img src="./src/public/imgs/final_api.png" width=""/>
+
+
+
+
+
 
  #### 4. Create a DynamoDB Table & Set up IAM Policies and Permissions
 
@@ -86,7 +165,7 @@ Choose the repository and main branch of the repository, then select **Next**.
 ###  Conclusion
 
 This React TypeScript GPA calculator application, integrated with AWS services, represents a powerful and efficient solution for academic performance tracking. By leveraging the robust capabilities of AWS Amplify, Lambda, DynamoDB, API Gateway, IAM, and Cognito, the project delivers a secure, scalable, and user-friendly platform for students and educational institutions alike.
-
+This project not only serves as a practical tool for GPA calculation but also demonstrates the power of combining modern frontend technologies with cloud services. It sets a solid foundation for future enhancements, such as integrating with learning management systems, generating performance reports, or expanding to include more complex grading systems.
 
 
 
