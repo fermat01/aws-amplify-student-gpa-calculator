@@ -122,14 +122,68 @@ After  successfully created lambda function, we need API to communicate between 
 
  <img src="./src/public/imgs/final_api.png" width=""/>
 
+- Let’s test our REST API endpoint using a tool like  Postman tool .
+   Paste the copied URL from the above step, select the method type as a POST,
+    and provide a valid JSON body for our POST API.
+
+ <img src="./src/public/imgs/postman-test.png" width=""/>
+
+- After table created successfully, you can view table details. Now, 
+   remember to copy and save ARN,it will be required later.
 
 
+ <img src="./src/public/imgs/dynamo_copy_arn.png" width=""/>
 
 
 
  #### 4. Create a DynamoDB Table & Set up IAM Policies and Permissions
 
-   ... 
+
+ So far, we created a serverless function, REST API, now we need a Database to save 
+ our student form data. As a database service, we will use AWS DynamoDB.
+
+- Let’s go to the DynamoDB service in AWS console and click the Create table.
+- Name it as **"gpa-dynamodb-table** with partition key **studentId**. 
+   Leave other settings default and Click Create table. 
+
+ <img src="./src/public/imgs/dynamodb-table.png" width=""/>
+
+**Set up IAM Policies and Permissions**
+
+- Once the DynamoDB table is successfully created go back to the AWS lambda function
+   we created.
+
+- Now we need to give access to our lambda function to write data into the DynamoDB table.
+
+- Select the Configuration tab and select the Permission tab from the right-side menu. 
+  After that click the URL of under the Role name.
+
+ <img src="./src/public/imgs/lambda-update-policy.png" width=""/>
+
+- This will take you to the IAM permission configuration settings page of  IAM role. 
+ Now click the Add permissions button and select Create inline policy 
+ from the dropdown.
+
+ <img src="./src/public/imgs/lambda-update-policy2.png" width=""/>
+
+- We  only need access to write and read data from database. So, we will select the “PutItem” checkbox under the Write section and “GetItem” checkbox under the Read section. 
+  I followed the least privilege access model.
+
+ <img src="./src/public/imgs/lambda-update-policy3.png" width=""/>
+
+- The next step is specifying the resource ARNs for this action, to do that select
+   the Specific option and after that click the Add ARNs link. 
+  It will open up a window for you to add your DynamoDB ARN.
+
+<img src="./src/public/imgs/lambda-update-policy4.png" width=""/>
+
+- Let’s give the policy a name and, 
+then review the details and click the Create policy button.
+
+ <img src="./src/public/imgs/lambda-update-policy_final.png" width=""/>
+
+
+
 
  #### 5. Create an AWS Cognito user pool
    ...
